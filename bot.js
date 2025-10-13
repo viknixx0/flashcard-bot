@@ -624,7 +624,12 @@ bot.on('message', (msg) => {
         userState.answer = text;
         
         // Сохраняем карточку
-        db.addCard(chatId, userState.question, userState.answer, userState.category, (err, cardId) => {
+        db.addCard(userId, {
+    question: question,
+    answer: answer,
+    category: category,
+    card_type: 'text'
+}, callback);
             if (err) {
                 bot.sendMessage(chatId, '❌ Ошибка при сохранении карточки');
                 console.error(err);
@@ -814,7 +819,12 @@ bot.on('message', (msg) => {
         userState.answer = text;
         
         // Сохраняем карточку
-        db.addCard(chatId, userState.question, userState.answer, userState.category, (err, cardId) => {
+       db.addCard(chatId, {
+    question: userState.question,
+    answer: userState.answer,
+    category: userState.category,
+    card_type: 'text'
+}, (err, cardId) => {
             if (err) {
                 bot.sendMessage(chatId, '❌ Ошибка при сохранении карточки');
                 console.error(err);
@@ -868,4 +878,5 @@ bot.onText(/\/debug/, (msg) => {
     
     bot.sendMessage(chatId, debugText, { parse_mode: 'Markdown' });
 });
+
 
