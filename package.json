@@ -1,0 +1,13 @@
+{
+  "name": "flashcard-bot",
+  "version": "1.0.0",
+  "description": "Telegram bot for spaced repetition learning",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.64.0",
+    "sqlite3": "^5.1.6"
+  }
+}
