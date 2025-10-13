@@ -661,7 +661,6 @@ bot.on('message', (msg) => {
                     }
                 );
             }
-        });
         
         userStates.delete(chatId);
     }
@@ -878,5 +877,6 @@ bot.onText(/\/debug/, (msg) => {
     
     bot.sendMessage(chatId, debugText, { parse_mode: 'Markdown' });
 });
+
 
 
