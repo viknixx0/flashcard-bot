@@ -1,7 +1,7 @@
 const TelegramBot = require('node-telegram-bot-api');
 const Database = require('./database');
 
-const TOKEN = '7970727383:AAGcRDAuhC023byLnwH66WylbazvYziwM3I';
+const TOKEN = '8260409057:AAElemEBXkXk0OMLNv7RnXQ_xYpKA3F7M30';
 const bot = new TelegramBot(TOKEN, { 
     polling: { 
         params: { 
@@ -883,6 +883,7 @@ bot.onText(/\/debug/, (msg) => {
     
     bot.sendMessage(chatId, debugText, { parse_mode: 'Markdown' });
 });
+
 
 
 
