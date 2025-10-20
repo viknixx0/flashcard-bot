@@ -2,14 +2,11 @@ const TelegramBot = require('node-telegram-bot-api');
 const Database = require('./database');
 
 const TOKEN = '8260409057:AAElemEBXkXk0OMLNv7RnXQ_xYpKA3F7M30';
-const bot = new TelegramBot(TOKEN);
+const bot = new TelegramBot(TOKEN, { polling: true });
 
-// Используем webhook вместо polling
-bot.setWebHook(`https://flashcard-bot-0syo.onrender.com/bot${TOKEN}`);
-
-// Обработка ошибок webhook
-bot.on('webhook_error', (error) => {
-    console.log('Webhook error:', error);
+// Удаляем webhook если был установлен
+bot.deleteWebHook().then(() => {
+    console.log('✅ Webhook удален, используем polling');
 });
 
 const db = new Database();
@@ -886,6 +883,7 @@ bot.onText(/\/debug/, (msg) => {
     
     bot.sendMessage(chatId, debugText, { parse_mode: 'Markdown' });
 });
+
 
 
 
