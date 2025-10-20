@@ -626,20 +626,20 @@ bot.on('message', (msg) => {
     }
     
     // Ввод ответа
-    else if (userState.state === 'waiting_answer') {
-        userState.answer = text;
-        
-        // Сохраняем карточку
-        db.addCard(userId, {
-    question: question,
-    answer: answer,
-    category: category,
-    card_type: 'text'
-}, callback);
-            if (err) {
-                bot.sendMessage(chatId, '❌ Ошибка при сохранении карточки');
-                console.error(err);
-            } else {
+else if (userState.state === 'waiting_answer') {
+    userState.answer = text;
+    
+    // Сохраняем карточку
+    db.addCard(chatId, {
+        question: userState.question,
+        answer: userState.answer,
+        category: userState.category,
+        card_type: 'text'
+    }, (err, cardId) => {
+        if (err) {
+            bot.sendMessage(chatId, '❌ Ошибка при сохранении карточки');
+            console.error(err);
+        } else {
                 const successKeyboard = {
                     reply_markup: {
                         inline_keyboard: [
@@ -667,6 +667,7 @@ bot.on('message', (msg) => {
                     }
                 );
             }
+        });
         
         userStates.delete(chatId);
     }
@@ -883,6 +884,7 @@ bot.onText(/\/debug/, (msg) => {
     
     bot.sendMessage(chatId, debugText, { parse_mode: 'Markdown' });
 });
+
 
 
 
