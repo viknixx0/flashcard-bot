@@ -559,29 +559,68 @@ bot.on('callback_query', (callbackQuery) => {
                 const progressBar = createProgressBar(levelProgress);
                 
                 bot.sendMessage(chatId, 
-                    statsText + `\n\n📈 Прогресс уровня:\n${progressBar}`,
-                    { parse_mode: 'Markdown' }
-                );
+    statsText + `\n\n📈 Прогресс уровня:\n${progressBar}`,
+    { parse_mode: 'Markdown' }
+);
             }
         });
         bot.answerCallbackQuery(callbackQuery.id);
     }
+        
+     // Главное меню
+else if (data === 'main_menu') {
+    bot.deleteMessage(chatId, message.message_id);
+    bot.sendMessage(chatId, 
+        '🏠 *Главное меню*\n\n' +
+        '/add - Добавить карточку\n' +
+        '/review - Тренировка\n' +
+        '/stats - Статистика\n' +
+        '/categories - Категории\n' +
+        '/achievements - Достижения\n' +
+        '/help - Помощь',
+        { parse_mode: 'Markdown' }
+    );
+    bot.answerCallbackQuery(callbackQuery.id);
+}
+
+// Добавить еще карточку
+else if (data === 'add_more') {
+    bot.deleteMessage(chatId, message.message_id);
     
-    // Главное меню
-    else if (data === 'main_menu') {
-        bot.deleteMessage(chatId, message.message_id);
-        bot.sendMessage(chatId, 
-            '🏠 *Главное меню*\n\n' +
-            '/add - Добавить карточку\n' +
-            '/review - Тренировка\n' +
-            '/stats - Статистика\n' +
-            '/categories - Категории\n' +
-            '/achievements - Достижения\n' +
-            '/help - Помощь',
-            { parse_mode: 'Markdown' }
-        );
-        bot.answerCallbackQuery(callbackQuery.id);
-    }
+    // Сбрасываем состояние и начинаем заново
+    userStates.set(chatId, { 
+        state: 'waiting_category',
+        category: 'Общее'
+    });
+    
+    const categoryKeyboard = {
+        reply_markup: {
+            inline_keyboard: [
+                [
+                    { text: "📝 Общее", callback_data: "category_Общее" },
+                    { text: "📚 Учеба", callback_data: "category_Учеба" }
+                ],
+                [
+                    { text: "💼 Работа", callback_data: "category_Работа" },
+                    { text: "🌍 Языки", callback_data: "category_Языки" }
+                ],
+                [
+                    { text: "➕ Новая категория", callback_data: "new_category" }
+                ]
+            ]
+        }
+    };
+    
+    bot.sendMessage(chatId, 
+        '📝 *Добавление карточки*\n\n' +
+        'Сначала выберите категорию:',
+        { 
+            parse_mode: 'Markdown',
+            reply_markup: categoryKeyboard.reply_markup 
+        }
+    );
+    bot.answerCallbackQuery(callbackQuery.id);
+}
 });
 
 // ==================== ОБРАБОТКА ВВОДА ТЕКСТА ====================
@@ -787,6 +826,7 @@ bot.onText(/\/debug/, (msg) => {
     
     bot.sendMessage(chatId, debugText, { parse_mode: 'Markdown' });
 });
+
 
 
 
