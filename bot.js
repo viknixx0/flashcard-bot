@@ -317,18 +317,6 @@ function showNextCard(chatId) {
     );
 }
 
-// Обработка текстовых ответов пользователя
-bot.on('message', (msg) => {
-    const chatId = msg.chat.id;
-    const text = msg.text;
-    const session = reviewSessions.get(chatId);
-    
-    if (!session || !session.currentCard || text.startsWith('/')) {
-        return;
-    }
-    
-    processUserAnswer(chatId, text, session);
-});
 
 function processUserAnswer(chatId, userAnswer, session) {
     const card = session.currentCard;
@@ -783,90 +771,6 @@ bot.onText(/\/checktables/, (msg) => {
     });
 });
 
-// Обработка текстовых ответов пользователя
-bot.on('message', (msg) => {
-    const chatId = msg.chat.id;
-    const text = msg.text;
-    const session = reviewSessions.get(chatId);
-    
-    // Если есть активная сессия и это не команда - обрабатываем как ответ
-    if (session && session.currentCard && !text.startsWith('/')) {
-        processUserAnswer(chatId, text, session);
-        return;
-    }
-    
-    // Обработка состояний добавления карточки
-    const userState = userStates.get(chatId);
-    if (!userState || text.startsWith('/')) return;
-
-    // Ввод новой категории
-    if (userState.state === 'waiting_new_category') {
-        userState.category = text;
-        userState.state = 'waiting_question';
-        
-        bot.sendMessage(chatId, 
-            `📁 Категория: *${text}*\n\n` +
-            `📝 *Введите вопрос:*`,
-            { parse_mode: 'Markdown' }
-        );
-    }
-    
-    // Ввод вопроса
-    else if (userState.state === 'waiting_question') {
-        userState.question = text;
-        userState.state = 'waiting_answer';
-        
-        bot.sendMessage(chatId, '📚 *Теперь введите ответ:*', { parse_mode: 'Markdown' });
-    }
-    
-    // Ввод ответа
-    else if (userState.state === 'waiting_answer') {
-        userState.answer = text;
-        
-        // Сохраняем карточку
-       db.addCard(chatId, {
-    question: userState.question,
-    answer: userState.answer,
-    category: userState.category,
-    card_type: 'text'
-}, (err, cardId) => {
-            if (err) {
-                bot.sendMessage(chatId, '❌ Ошибка при сохранении карточки');
-                console.error(err);
-            } else {
-                const successKeyboard = {
-                    reply_markup: {
-                        inline_keyboard: [
-                            [
-                                { text: "➕ Добавить еще", callback_data: "add_more" },
-                                { text: "🎯 Тренировка", callback_data: "review_now" }
-                            ],
-                            [
-                                { text: "📊 Статистика", callback_data: "show_stats" },
-                                { text: "🏠 Главное меню", callback_data: "main_menu" }
-                            ]
-                        ]
-                    }
-                };
-                
-                bot.sendMessage(chatId, 
-                    `✅ *Карточка добавлена!*\n\n` +
-                    `📁 Категория: ${userState.category}\n` +
-                    `❓ Вопрос: ${userState.question}\n` +
-                    `📚 Ответ: ${userState.answer}\n\n` +
-                    `🎯 Карточка будет ждать повторения!`,
-                    { 
-                        parse_mode: 'Markdown',
-                        reply_markup: successKeyboard.reply_markup 
-                    }
-                );
-            }
-        });
-        
-        userStates.delete(chatId);
-    }
-});
-
 // ==================== ОТЛАДКА ====================
 bot.onText(/\/debug/, (msg) => {
     const chatId = msg.chat.id;
@@ -883,6 +787,7 @@ bot.onText(/\/debug/, (msg) => {
     
     bot.sendMessage(chatId, debugText, { parse_mode: 'Markdown' });
 });
+
 
 
 
